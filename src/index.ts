@@ -15,6 +15,7 @@ import axios, { AxiosError } from 'axios'
  * @example
  * // Handling items asynchronously
  * import SteamInventoryIterator from 'steam-inventory-iterator'
+ *
  * for await (const result of SteamInventoryIterator('76561198340449674', 730, 2)) {
  *     if (result instanceof Error) {
  *         console.log('an error has occurred:', result);
@@ -74,7 +75,7 @@ export default async function* SteamInventoryIterator(
  * // Getting an entire inventory at once:
  * import { getInventory } from 'steam-inventory-iterator'
  * const items = await getInventory('76561198340449674', 730, 2)
- * // Note that this eliminates the benefits of error handling, nor asynchronous iterations (e.g. less ram usage).
+ * // Note that this eliminates the benefits of error handling and asynchronous iteration
  */
 export async function getInventory(...params: Parameters<typeof SteamInventoryIterator>): Promise<SteamItem[]> {
 	return (await collectAsyncIterator(SteamInventoryIterator(...params))).filter(
