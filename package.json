@@ -1,7 +1,8 @@
 {
   "name": "steam-inventory-iterator",
   "version": "1.0.2",
-  "main": "index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "repository": "git@github.com:timvandam/steam-inventory-iterator.git",
   "author": "Tim van Dam <timvandamcs@gmail.com>",
   "license": "MIT",
@@ -12,6 +13,5 @@
   },
   "dependencies": {
     "axios": "^0.21.1"
-  },
-  "types": "build/types.d.ts"
+  }
 }
