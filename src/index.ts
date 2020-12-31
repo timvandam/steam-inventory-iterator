@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { RequestParams, SteamItem, SteamResponse } from './types'
 
+export * from './types'
+
 /**
  * Iterates through an entire steam inventory asynchronously.
  *

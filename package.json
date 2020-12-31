@@ -1,6 +1,6 @@
 {
   "name": "steam-inventory-iterator",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "repository": "git@github.com:timvandam/steam-inventory-iterator.git",
