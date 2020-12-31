@@ -1,4 +1,5 @@
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
+import { RequestParams, SteamItem, SteamResponse } from './types'
 
 /**
  * Iterates through an entire steam inventory asynchronously.
@@ -38,7 +39,7 @@ export async function* SteamInventoryIterator(
 		try {
 			const response = await axios.get<SteamResponse>(url, { params })
 			const { data } = response
-			const { assets, descriptions, success, error } = data
+			const { assets, descriptions, success, error, more_items, last_assetid } = data
 
 			if (error) throw new Error(error)
 			if (!success) throw new Error('Unsuccessful request')
@@ -53,8 +54,8 @@ export async function* SteamInventoryIterator(
 				yield Object.assign({}, asset, descriptionsByClassIdInstanceId.get(`${classid}_${instanceid}`))
 			}
 
-			params.start_assetid = data.last_assetid
-			moreItems = !!data.more_items
+			params.start_assetid = last_assetid
+			moreItems = !!more_items
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
 				const steamError = error?.response?.data?.error
@@ -69,7 +70,12 @@ export async function* SteamInventoryIterator(
  * Just like `SteamInventoryIterator`, but does not yield items one by one, and instead returns the complete inventory at once.
  *
  * This does not allow for memory efficient implementations, nor error handling, that `SteamInventoryIterator` does allow.
- * @param params Parameters used to construct the internal `SteamInventoryIterator`
+ *
+ * @param steamId SteamId of the inventory to iterate through
+ * @param appId Inventory appid
+ * @param contextId Inventory contextid
+ * @param language Language (default = en)
+ * @param count Amount of items to fetch per request (default = max = 5000)
  *
  * @example
  * // Getting an entire inventory at once:
@@ -77,8 +83,14 @@ export async function* SteamInventoryIterator(
  * const items = await getInventory('76561198340449674', 730, 2)
  * // Note that this eliminates the benefits of error handling and asynchronous iteration
  */
-export async function getInventory(...params: Parameters<typeof SteamInventoryIterator>): Promise<SteamItem[]> {
-	return (await collectAsyncIterator(SteamInventoryIterator(...params))).filter(
+export async function getInventory(
+	steamId: string,
+	appId: number,
+	contextId: number,
+	language = 'english',
+	count = 5000
+): Promise<SteamItem[]> {
+	return (await collectAsyncIterator(SteamInventoryIterator(steamId, appId, contextId, language, count))).filter(
 		(result): result is SteamItem => !(result instanceof Error)
 	)
 }
