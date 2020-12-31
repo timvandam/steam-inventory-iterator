@@ -6,7 +6,7 @@ Built with Typescript. Ships with types. Transpiled to [ES6 / ES2015](https://no
 ### Examples
 ```ts
 // Handling items asynchronously
-import SteamInventoryIterator from 'steam-inventory-iterator'
+import { SteamInventoryIterator } from 'steam-inventory-iterator'
 
 // SteamInventoryIterator is an async iterator that yields either an Error or a SteamItem
 for await (const result of SteamInventoryIterator('76561198340449674', 730, 2)) {

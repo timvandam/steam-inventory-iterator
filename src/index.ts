@@ -14,7 +14,7 @@ import axios, { AxiosError } from 'axios'
  *
  * @example
  * // Handling items asynchronously
- * import SteamInventoryIterator from 'steam-inventory-iterator'
+ * import { SteamInventoryIterator } from 'steam-inventory-iterator'
  *
  * for await (const result of SteamInventoryIterator('76561198340449674', 730, 2)) {
  *     if (result instanceof Error) {
@@ -24,7 +24,7 @@ import axios, { AxiosError } from 'axios'
  *     handleItem(result);
  * }
  */
-export default async function* SteamInventoryIterator(
+export async function* SteamInventoryIterator(
 	steamId: string,
 	appId: number,
 	contextId: number,
@@ -99,7 +99,7 @@ async function collectAsyncIterator<T>(asyncIterable: AsyncIterable<T>): Promise
  * @param objects Collection of objects
  * @param keyExtractor Function that creates a key from an object
  */
-export function mapByDerivedKey<T, K>(objects: Iterable<T>, keyExtractor: (object: T) => K): Map<K, T> {
+function mapByDerivedKey<T, K>(objects: Iterable<T>, keyExtractor: (object: T) => K): Map<K, T> {
 	const result = new Map<K, T>()
 	for (const object of objects) {
 		result.set(keyExtractor(object), object)

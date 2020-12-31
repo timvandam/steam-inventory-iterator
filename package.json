@@ -1,7 +1,7 @@
 {
   "name": "steam-inventory-iterator",
   "version": "1.0.0",
-  "main": "src/index.js",
+  "main": "index.js",
   "repository": "git@github.com:timvandam/steam-inventory-iterator.git",
   "author": "Tim van Dam <timvandamcs@gmail.com>",
   "license": "MIT",
