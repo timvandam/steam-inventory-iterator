@@ -3,24 +3,45 @@ Steam Inventory Async Iterator
 
 Built with Typescript. Ships with types. Transpiled to [ES6 / ES2015](https://node.green/#ES2015).
 
-### Examples
+## Examples
 ```ts
 // Handling items asynchronously
-import { SteamInventoryIterator } from 'steam-inventory-iterator'
+import { SteamInventoryIterator, PrivateInventoryError } from 'steam-inventory-iterator'
 
-// SteamInventoryIterator is an async iterator that yields either an Error or a SteamItem
-for await (const result of SteamInventoryIterator('76561198340449674', 730, 2)) {
-    if (result instanceof Error) {
-        console.log('an error has occurred:', result);
-        continue;
+try {
+    for await (const result of SteamInventoryIterator('76561198340449674', 730, 2)) {
+        // Handle non-fatal errors like rate limits, steam-side errors, etc.
+        if (result instanceof Error) {
+            handleError(result)
+            continue;
+        }
+    
+        // No errors, so handle the itemPrivateError
+        handleItem(result);
     }
-    handleItem(result);
+} catch (error) {
+    // Handle fatal errors like it being a private inventory
+    if (error instanceof PrivateInventoryError) {
+        console.log('your inventory is private')
+    }
+    // etc
 }
+
+// All errors can be found in errors.ts
 ```
 
 ```ts
 // Getting an entire inventory at once
 import { getInventory } from 'steam-inventory-iterator'
-const items = await getInventory('76561198340449674', 730, 2)
-// Note that this eliminates the benefits of error handling and asynchronous iteration
+// All non-fatal errors are returned. If you want them to be handled your way use SteamInventoryIterator
+getInventory('76561198340449674', 730, 2)
+    .then(items => handleItems)
+    .catch(fatalError => handleFatalError(fatalError))
 ```
+
+## Errors
+There are several error classes. `SteamInventoryIterator` can yield numerous non-fatal errors.
+
+Fatal errors are thrown instead of yielded, and extend the `FatalError` class.
+
+All errors can be found in [errors.ts](./src/errors.ts). They can be imported just like everything else.

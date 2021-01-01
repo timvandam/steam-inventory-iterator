@@ -1,7 +1,9 @@
 import axios from 'axios'
 import { RequestParams, SteamItem, SteamResponse } from './types'
+import getErrorForStatusCode, { FatalError, RateLimitError, SteamError } from './errors'
 
 export * from './types'
+export * from './errors'
 
 /**
  * Iterates through an entire steam inventory asynchronously.
@@ -20,6 +22,7 @@ export * from './types'
  * import { SteamInventoryIterator } from 'steam-inventory-iterator'
  *
  * for await (const result of SteamInventoryIterator('76561198340449674', 730, 2)) {
+ * 	   // Handle non-fatal errors. (E.g. rate limits, errors on steam's side)
  *     if (result instanceof Error) {
  *         console.log('an error has occurred:', result);
  *         continue;
@@ -43,8 +46,8 @@ export async function* SteamInventoryIterator(
 			const { data } = response
 			const { assets, descriptions, success, error, more_items, last_assetid } = data
 
-			if (error) throw new Error(error)
-			if (!success) throw new Error('Unsuccessful request')
+			if (error) throw new SteamError(500, error)
+			if (!success) throw new SteamError(500, 'Unsuccessful request')
 
 			const descriptionsByClassIdInstanceId = mapByDerivedKey(
 				descriptions,
@@ -59,11 +62,19 @@ export async function* SteamInventoryIterator(
 			params.start_assetid = last_assetid
 			moreItems = !!more_items
 		} catch (error) {
-			if (axios.isAxiosError(error)) {
-				const steamError = error?.response?.data?.error
-				yield new Error(steamError ?? error.message)
-			} else if (error instanceof Error) yield error
-			else yield new Error(error.toString())
+			const e = axios.isAxiosError(error)
+				? error.response
+					? getErrorForStatusCode(error.response.status, error.response.data?.error)
+					: error
+				: error instanceof Error
+				? error
+				: new Error(error.toString())
+
+			if (e instanceof FatalError) throw e
+
+			yield e
+
+			if (e instanceof RateLimitError) await sleep(RateLimitError.timeout)
 		}
 	}
 }
@@ -119,4 +130,12 @@ function mapByDerivedKey<T, K>(objects: Iterable<T>, keyExtractor: (object: T) =
 		result.set(keyExtractor(object), object)
 	}
 	return result
+}
+
+/**
+ * Resolves after a given timeout
+ * @param timeout Timeout in ms
+ */
+function sleep(timeout: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, timeout))
 }
