@@ -16,7 +16,7 @@ try {
       continue;
     }
   
-    // No errors, so handle the itemPrivateError
+    // No errors, so handle the item
     handleItem(result);
   }
 } catch (error) {

@@ -25,7 +25,7 @@ export class FatalError extends SteamInventoryIteratorError {}
 export class ClientError extends SteamInventoryIteratorError {}
 
 /**
- * Private inventory. This error will case iteration to be stopped.
+ * Private inventory. This error will cause iteration to be stopped.
  * Caused by a 403 response.
  */
 export class PrivateInventoryError extends FatalError {
