@@ -63,6 +63,10 @@ async function* SteamInventoryIteratorWithErrorHandling(...params: Parameters<ty
 ## Errors
 There are several error classes. `SteamInventoryIterator` can yield numerous non-fatal errors.
 
-Fatal errors are thrown instead of yielded, and extend the `FatalError` class.
+Fatal errors are thrown instead of yielded, and extend the [`FatalError`](./src/errors.ts) class.
 
 All errors can be found in [errors.ts](./src/errors.ts). They can be imported just like everything else.
+
+## Rate Limits
+Steam rate limits requests. Once you've reached the limit you will start receiving [`RateLimitError`](./src/errors.ts) objects.
+By default receiving such an error will trigger a 5-second timeout. You can modify the timeout duration by changing `RateLimitError.timeout`.

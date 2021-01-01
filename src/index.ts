@@ -120,7 +120,7 @@ async function collectAsyncIterator<T>(asyncIterable: AsyncIterable<T>): Promise
 }
 
 /**
- * Maps a collection of object by some key that is derived using a provided method
+ * Maps a collection of objects by some key that is derived using a provided method
  * @param objects Collection of objects
  * @param keyExtractor Function that creates a key from an object
  */
