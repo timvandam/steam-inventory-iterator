@@ -51,6 +51,7 @@ export interface Description {
 	tags: Tag[]
 	tradable: number
 	type: string
+	market_fee_app?: number
 }
 
 export interface Action {
